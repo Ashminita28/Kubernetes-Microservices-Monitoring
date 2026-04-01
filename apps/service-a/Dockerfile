@@ -1,28 +1,47 @@
-#Stage 1 : Build stage
- FROM node:18-alpine As builder
+#Stage 1: Build
+FROM node:18-alpine AS builder
 
- RUN npm install -g pnpm
+WORKDIR /app
 
- WORKDIR /app
+RUN corepack enable
 
- COPY package*.json ./
- RUN pnpm install
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY tsconfig.base.json ./
 
- COPY . .
 
- RUN pnpm run build
+COPY apps/service-a ./apps/service-a
+COPY shared ./shared
 
- #Stage 2: Production
- FROM node:18-alpine
 
- RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
 
- WORKDIR /app
 
- COPY --from=builder /app/node_modules ./node_modules
- COPY --from=builder /app/dist ./dist
- COPY --from=builder /app/package*.json ./
+RUN pnpm --filter @all/shared build
 
- EXPOSE 3000
+RUN pnpm --filter service-a build
 
- CMD ["node","dist/server.js"]
+
+# Stage 2: Runner
+FROM node:18-alpine AS runner
+WORKDIR /app
+
+RUN corepack enable
+
+
+COPY --from=builder /app/apps/service-a ./apps/service-a
+COPY --from=builder /app/shared ./shared
+
+
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+
+
+RUN pnpm install --prod --filter service-a... --ignore-scripts
+
+
+COPY --from=builder /app/apps/service-a/dist ./apps/service-a/dist
+
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["node", "apps/service-a/dist/server.js"]
