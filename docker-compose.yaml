@@ -1,14 +1,37 @@
 services:
-  service-a:
-    build: ./apps/service-a
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      - redis
-  
   redis:
     image: redis:7-alpine
+    container_name: redis
     ports:
       - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  service-a:
+    build: 
+      context: .
+      dockerfile: ./apps/service-a/Dockerfile
+    container_name: service-a
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      - redis
+
+  service-b:
+    build: 
+      context: .
+      dockerfile: ./apps/service-b/Dockerfile
+    container_name: service-b
+    ports:
+      - "9100:9100"
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    depends_on:
+      - redis
+
+volumes:
+  redis-data:
