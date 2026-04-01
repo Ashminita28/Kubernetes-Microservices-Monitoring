@@ -2,8 +2,6 @@
   "compilerOptions": {
     // File Layout
     "rootDir": ".",
-    "outDir": "./dist",
-
     // Environment Settings
     "module": "nodenext",
     "target": "esnext",
@@ -24,10 +22,6 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@shared/*": ["shared/*"]
-    }
+    "skipLibCheck": true
   }
 }
