@@ -15,6 +15,11 @@ export const processJob = async (jobId: string) => {
       logger.warn(`Job ${jobId} not found`);
       return;
     }
+    if (!job.data) {
+      logger.warn(`Job data for ${jobId} is missing`);
+      await redis.hset(`job:${jobId}`, { status: 'failed' });
+      return;
+    }
 
     await redis.hset(`job:${jobId}`, {
       status: 'processing',
