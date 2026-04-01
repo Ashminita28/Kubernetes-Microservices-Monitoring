@@ -8,6 +8,7 @@
     "prepare": "husky install",
     "lint": "eslint",
     "format": "prettier --write .",
+    "build": "tsc",
     "dev:a": "pnpm --filter service-a start"
   },
   "keywords": [],
