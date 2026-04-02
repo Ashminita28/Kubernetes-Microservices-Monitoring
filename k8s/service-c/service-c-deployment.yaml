@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-c
+  template:
+    metadata:
+      labels:
+        app: service-c
+    spec:
+      containers:
+        - name: service-c
+          image: service-c-statistics
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          env:
+            - name: REDIS_HOST
+              value: redis
