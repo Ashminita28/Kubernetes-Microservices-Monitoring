@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-b
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: service-b
+  template:
+    metadata:
+      labels:
+        app: service-b
+    spec:
+      containers:
+        - name: service-b
+          image: service-b
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9100
+          env:
+            - name: REDIS_HOST
+              value: redis
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
