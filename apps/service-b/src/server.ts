@@ -1,3 +1,5 @@
+import client from 'prom-client';
+client.collectDefaultMetrics();
 import dotenv from 'dotenv';
 dotenv.config();
 import app from './app';
@@ -17,8 +19,7 @@ const startApp = async () => {
       logger.info(`Metrics server running on port ${PORT}`);
     });
 
-    startWorker();
-    logger.info('Worker started successfully');
+    await startWorker();
   } catch (error) {
     logger.error({ err: error }, 'Failed to start app:');
     process.exit(1);

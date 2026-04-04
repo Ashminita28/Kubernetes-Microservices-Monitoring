@@ -11,8 +11,8 @@ import {
 export const processJob = async (jobId: string) => {
   try {
     const job = await redis.hgetall(`job:${jobId}`);
-    if (!jobId) {
-      logger.warn(`Job ${jobId} not found`);
+    if (!job || Object.keys(job).length === 0) {
+      logger.warn(`Job ${jobId} not found in queue`);
       return;
     }
     if (!job.data) {
@@ -28,7 +28,8 @@ export const processJob = async (jobId: string) => {
     logger.info(`Job ${jobId} is processing`);
 
     const jobData = JSON.parse(job.data);
-    const jobType = jobData.type || Math.floor(Math.random() * 3);
+    const jobType =
+      jobData.type !== undefined ? jobData.type : Math.floor(Math.random() * 3);
     let result: unknown;
     const start = Date.now();
     if (jobType === 0) {

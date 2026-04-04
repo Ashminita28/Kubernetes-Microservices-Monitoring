@@ -13,8 +13,10 @@ export const startWorker = async () => {
 
   while (isRunning) {
     try {
+      logger.info('running job');
       const result = await redis.brpop('job_queue', 0);
       if (!result) continue;
+      logger.info('dsfsfsfs');
 
       const jobId = result[1];
 
