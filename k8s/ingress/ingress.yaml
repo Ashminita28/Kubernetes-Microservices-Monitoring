@@ -1,35 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: service-a-ingress
   namespace: default
-  labels:
-    app: microservices
-  annotations:
+  annotations: 
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx
   rules:
     - http:
         paths:
-          - path: /submit
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: service-a
                 port:
-                  number: 80
-          - path: /status
-            pathType: Prefix
-            backend:
-              service:
-                name: service-a
-                port:
-                  number: 80
-          - path: /stats
-            pathType: Prefix
-            backend:
-              service:
-                name: service-c
-                port:
-                  number: 3000
+                   number: 3000
