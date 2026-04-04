@@ -1,11 +1,12 @@
 import { JobData } from '../validations/job-schema';
 import { logger, redis } from '@all/shared';
 import { generateJobId } from '../utils/jobId';
+import { REDIS_KEY } from '@all/shared';
 export const JobService = {
   async submitJob(job: JobData): Promise<string> {
     const jobId = generateJobId();
 
-    await redis.lpush('job_queue', jobId);
+    await redis.lpush(REDIS_KEY.JOB_QUEUE, jobId);
     await redis.hset(`job:${jobId}`, {
       status: 'queued',
       data: JSON.stringify(job),

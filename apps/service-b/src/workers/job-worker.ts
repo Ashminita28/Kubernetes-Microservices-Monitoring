@@ -1,6 +1,7 @@
 import { redis } from '@all/shared';
 import { processJob } from '../services/job-processor';
 import { logger } from '@all/shared';
+import { REDIS_KEY } from '@all/shared';
 
 let isRunning = true;
 
@@ -14,7 +15,7 @@ export const startWorker = async () => {
   while (isRunning) {
     try {
       logger.info('running job');
-      const result = await redis.brpop('job_queue', 0);
+      const result = await redis.brpop(REDIS_KEY.JOB_QUEUE, 0);
       if (!result) continue;
       logger.info('dsfsfsfs');
 

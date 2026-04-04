@@ -1,7 +1,7 @@
-import { redis } from '@all/shared';
+import { redis, REDIS_KEY } from '@all/shared';
 
 export const getStats = async () => {
-  const queueLength = await redis.llen('job_queue');
+  const queueLength = await redis.llen(REDIS_KEY.JOB_QUEUE);
   const keys = await redis.keys('job:*');
 
   const totalJobSubmitted = keys.length;
