@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { JobService } from '../services/job-service';
 import { jobSchema, JobData } from '../validations/job-schema';
-import { generateJobId } from '../utils/jobId';
+import { logger } from '@all/shared';
 export const JobController = {
   async createJob(req: Request, res: Response) {
     try {
@@ -12,11 +12,11 @@ export const JobController = {
         });
       }
       const jobData: JobData = parseResult.data;
-      const id = generateJobId();
+      const id = await JobService.submitJob(jobData);
       await JobService.submitJob(jobData);
       res.status(202).json({ id, message: 'job quedued' });
     } catch (error) {
-      console.error('submit error', error);
+      logger.error({ err: error }, 'submit error');
       res.status(500).json({ error: 'failed to submit job' });
     }
   },
@@ -24,9 +24,14 @@ export const JobController = {
     try {
       const id = req.params.id;
       const data = await JobService.fetchJobStatus(id as string);
+      if (!data || Object.keys(data).length === 0) {
+        res.status(404).json({
+          error: 'Job no found',
+        });
+      }
       res.json(data);
     } catch (error) {
-      console.error('status error', error);
+      logger.error({ err: error }, 'status error');
       res.status(500).json({ error: 'failed to fetch status' });
     }
   },
