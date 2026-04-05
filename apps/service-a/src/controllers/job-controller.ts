@@ -13,7 +13,6 @@ export const JobController = {
       }
       const jobData: JobData = parseResult.data;
       const id = await JobService.submitJob(jobData);
-      await JobService.submitJob(jobData);
       res.status(202).json({ id, message: 'job quedued' });
     } catch (error) {
       logger.error({ err: error }, 'submit error');
@@ -28,6 +27,7 @@ export const JobController = {
         res.status(404).json({
           error: 'Job no found',
         });
+        return;
       }
       res.json(data);
     } catch (error) {
